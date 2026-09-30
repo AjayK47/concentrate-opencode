@@ -4,19 +4,27 @@ Use [Concentrate AI](https://concentrate.ai) as a model provider in [opencode](h
 
 ## Quick start
 
+**macOS / Linux / WSL**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/AjayK47/concentrate-opencode/main/setup-opencode.sh | bash
+```
+
+**Windows (PowerShell)**
+
+```powershell
+irm https://raw.githubusercontent.com/AjayK47/concentrate-opencode/main/setup-opencode.ps1 | iex
 ```
 
 You'll need:
 
 1. A Concentrate API key (`sk-cn-...`) from [concentrate.ai/api-keys](https://concentrate.ai/api-keys)
 2. [opencode](https://opencode.ai) installed
-3. `curl` and `python3`
+3. macOS / Linux: `curl` and `python3`. Windows: nothing extra (works in Windows PowerShell 5.1 and PowerShell 7)
 
 Then launch `opencode`, run `/models`, and pick any `concentrate/...` model.
 
-### Options
+### Options (macOS / Linux)
 
 ```bash
 # Non-interactive
@@ -32,9 +40,23 @@ curl -fsSL https://raw.githubusercontent.com/AjayK47/concentrate-opencode/main/s
 | `--model`, `-m` | Make `concentrate/<model>` opencode's default model |
 | `--no-default` | Leave opencode's default model unchanged |
 
+### Options (Windows)
+
+```powershell
+# Non-interactive
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AjayK47/concentrate-opencode/main/setup-opencode.ps1))) -Key sk-cn-... -Model claude-sonnet-5-5
+
+# Add the provider without changing your default model
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/AjayK47/concentrate-opencode/main/setup-opencode.ps1))) -NoDefault
+```
+
+Flags are `-Key`, `-Model` and `-NoDefault`, matching the macOS / Linux ones. To run a downloaded copy instead: `powershell -ExecutionPolicy Bypass -File setup-opencode.ps1`.
+
 Re-run the script anytime to pick up newly added models.
 
 ## What it changes
+
+On Windows, `~` below is your user folder (`%USERPROFILE%`), e.g. `C:\Users\you\.config\opencode\opencode.json`.
 
 - **`~/.config/opencode/opencode.json`** (or `opencode.jsonc` if you have one) — adds a `concentrate` provider with every model from `https://api.concentrate.ai/v1/models/`, including context limits, pricing and tool/vision/reasoning support. Other settings are kept.
 - **`~/.local/share/opencode/auth.json`** — stores your API key, the same place `opencode auth login` does (file mode `600`).
@@ -71,11 +93,16 @@ Then either `export CONCENTRATE_API_KEY=sk-cn-...` or run `opencode auth login`,
 curl -fsSL https://raw.githubusercontent.com/AjayK47/concentrate-opencode/main/uninstall-opencode.sh | bash
 ```
 
+```powershell
+irm https://raw.githubusercontent.com/AjayK47/concentrate-opencode/main/uninstall-opencode.ps1 | iex
+```
+
 Removes the `concentrate` provider, any `concentrate/...` default model, and the stored key. `CONCENTRATE_API_KEY` in your shell profile is left alone since other Concentrate integrations share it.
 
 ## Troubleshooting
 
 - **Invalid API key** — check it starts with `sk-cn` and has no extra spaces.
+- **No credits left** — the key is valid but the account needs topping up at [concentrate.ai](https://concentrate.ai).
 - **No Concentrate models in `/models`** — run `opencode models concentrate`; if it's empty, re-run the setup script.
 - **A model doesn't use tools** — a few models (e.g. `deepseek-r1`) don't support tool calling, so opencode's agent can only chat with them.
 

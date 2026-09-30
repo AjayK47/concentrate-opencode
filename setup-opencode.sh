@@ -203,6 +203,9 @@ http_code=$(
 if [[ "$http_code" = "401" || "$http_code" = "403" ]]; then
   fail "Invalid API key. Check your key at https://concentrate.ai/settings/api-keys"
 fi
+if [[ "$http_code" = "402" ]]; then
+  fail "Your API key is valid but has no credits left. Top up at https://concentrate.ai"
+fi
 if [[ "$http_code" =~ ^[45] ]]; then
   fail "API verification failed (HTTP $http_code)."
 fi
